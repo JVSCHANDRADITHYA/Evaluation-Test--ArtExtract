@@ -26,7 +26,15 @@ from torchvision.transforms import transforms
     
 class WikiArtDataset(Dataset):
     def __init__(self, artist_csv, genre_csv, style_csv, img_dir, transform=None):
-        # Load CSVs We have 3 lables for each image and hence create a dataframe accordingly
+        '''
+        Args:
+            artist_csv (str): Path to the CSV file containing artist labels for each image.  
+            genre_csv (str): Path to the CSV file containing genre labels for each image.
+            style_csv (str): Path to the CSV file containing style labels for each image.   
+            
+            img_dir (str): Path to the image directory. 
+            transform (callable, optional): Optional transform to be applied on an image.
+        '''
         self.artist_labels = pd.read_csv(artist_csv)
         self.genre_labels = pd.read_csv(genre_csv)
         self.style_labels = pd.read_csv(style_csv)
@@ -47,8 +55,8 @@ class WikiArtDataset(Dataset):
         img_id = self.data.iloc[index]['image_path']
         img_path = os.path.join(self.img_dir, img_id)
         
-        if not os.path.exists(image_path):
-            print(f"File not found: {image_path}")
+        if not os.path.exists(img_path):
+            print(f"File not found: {img_path}")
              
         # Read image
         # Convert to float tensor for better handling you can just omit the float / 255.0 if you want to keep it as int tensor
@@ -87,7 +95,9 @@ if __name__ == '__main__' :
     # Create dataset instance
     dataset = WikiArtDataset(artist_csv=artist_csv, genre_csv=genres_csv, style_csv=styles_csv, img_dir=img_dir, transform=None)
 
-    image, labels = dataset[0]
+    print(len(dataset))
+    
+    image, labels = dataset[8000]
     print(image, labels)
     plt.imshow(image.permute(1, 2, 0))
     plt.show()

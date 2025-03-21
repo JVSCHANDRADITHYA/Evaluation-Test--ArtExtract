@@ -64,4 +64,4 @@ if __name__ == '__main__':
     dataset = WikiArtDataset(artist_csv=artist_csv, genre_csv=genres_csv, style_csv=styles_csv, img_dir=img_dir, transform=None)
     
     visualizer = WikiArtVisualizer(dataset)
-    visualizer.show_random_images()
+    visualizer.show_random_images(2, 2)
