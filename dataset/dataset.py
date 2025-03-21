@@ -1,3 +1,18 @@
+'''
+This code implements on top of the torch.utils.data.Dataset class to create a
+custom dataset for the WikiArt dataset. The dataset class is called WikiArtDataset and consists of three labels artist, genre and style. 
+The dataset class takes in the path to the artist, genre and style csv files and the data directory where multiple subfolders each contianing images are present. 
+The __len__ method returns the length of the dataset and the __getitem__ method returns the image and the labels as tensors. 
+The image is read using the torchvision.io.read_image function and is converted to a float tensor. The labels are converted to a tensor as well. 
+The __getitem__ method also applies the transformations if provided. 
+
+The image is then returned along with the labels in the form of a torch tensor of float type.
+
+The example usage of the WikiArtDataset class is also provided in the code. 
+The artist, genre and style csv files and the image directory are provided as input to the WikiArtDataset class.
+The image and labels are then printed and the image is displayed using the matplotlib.pyplot.imshow function.
+'''
+
 import os
 import numpy as np
 import cv2
@@ -25,12 +40,20 @@ class WikiArtDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, index):
+        
+        # returns image and labels as tensor 
+        # image is in (C, H, W) format i.e Channel, Height, Width and needs to be converted bcak to (H, W, C) format for plotting
+        
         img_id = self.data.iloc[index]['image_path']
         img_path = os.path.join(self.img_dir, img_id)
-
+        
+        if not os.path.exists(image_path):
+            print(f"File not found: {image_path}")
+             
         # Read image
-        image = Image.open(img_path).convert('RGB')  # Convert to float tensor for better handling
-
+        # Convert to float tensor for better handling you can just omit the float / 255.0 if you want to keep it as int tensor
+        image = read_image(img_path).float() /255.0  
+        
         artist_label = self.data.iloc[index]['artist']
         genre_label = self.data.iloc[index]['genre']
         style_label = self.data.iloc[index]['style']
@@ -43,7 +66,6 @@ class WikiArtDataset(Dataset):
         if self.transform:
             image = self.transform(image)
                
-
         return image, labels
     
     
@@ -58,7 +80,6 @@ if __name__ == '__main__' :
 
     tran = transforms.Compose([
         transforms.Resize((225, 225)),
-        transforms.ToTensor(),
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
     ])
 
@@ -68,5 +89,5 @@ if __name__ == '__main__' :
 
     image, labels = dataset[0]
     print(image, labels)
-    plt.imshow(image)
+    plt.imshow(image.permute(1, 2, 0))
     plt.show()
