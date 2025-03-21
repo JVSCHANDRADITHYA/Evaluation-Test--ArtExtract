@@ -2,10 +2,13 @@ import os
 import numpy as np
 import cv2
 import pandas as pd
+from PIL import Image
+import matplotlib.pyplot as plt
 import torch
 from torchvision.io import read_image
 from torch.utils.data import Dataset
-
+from torchvision.transforms import transforms
+    
 class WikiArtDataset(Dataset):
     def __init__(self, artist_csv, genre_csv, style_csv, img_dir, transform=None):
         # Load CSVs We have 3 lables for each image and hence create a dataframe accordingly
@@ -26,7 +29,7 @@ class WikiArtDataset(Dataset):
         img_path = os.path.join(self.img_dir, img_id)
 
         # Read image
-        image = read_image(img_path).float()  # Convert to float tensor for better handling
+        image = Image.open(img_path).convert('RGB')  # Convert to float tensor for better handling
 
         artist_label = self.data.iloc[index]['artist']
         genre_label = self.data.iloc[index]['genre']
@@ -39,8 +42,11 @@ class WikiArtDataset(Dataset):
         # Apply transformations if provided
         if self.transform:
             image = self.transform(image)
+               
 
         return image, labels
+    
+    
 
 
 # EXAMPLE USAGE
@@ -50,6 +56,17 @@ if __name__ == '__main__' :
     genres_csv = r"F:\GSoc_2025\wiki_art_dataset\wikiart\genre_train.csv"
     img_dir = r"F:\GSoc_2025\wiki_art_dataset\wikiart"
 
-    # Create dataset instance
-    dataset = WikiArtDataset(artist_csv=artist_csv, genre_csv=genres_csv, style_csv=styles_csv, img_dir=img_dir)
+    tran = transforms.Compose([
+        transforms.Resize((225, 225)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+    ])
 
+    
+    # Create dataset instance
+    dataset = WikiArtDataset(artist_csv=artist_csv, genre_csv=genres_csv, style_csv=styles_csv, img_dir=img_dir, transform=None)
+
+    image, labels = dataset[0]
+    print(image, labels)
+    plt.imshow(image)
+    plt.show()

@@ -38,6 +38,9 @@ if __name__ == '__main__':
     genres_csv = r"F:\GSoc_2025\wiki_art_dataset\wikiart\genre_train.csv"
     img_dir = r"F:\GSoc_2025\wiki_art_dataset\wikiart"
 
+
+
+    
     # Create dataset instance
     dataset = WikiArtDataset(artist_csv=artist_csv, genre_csv=genres_csv, style_csv=styles_csv, img_dir=img_dir)
     
