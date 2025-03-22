@@ -11,6 +11,8 @@ The image is then returned along with the labels in the form of a torch tensor o
 The example usage of the WikiArtDataset class is also provided in the code. 
 The artist, genre and style csv files and the image directory are provided as input to the WikiArtDataset class.
 The image and labels are then printed and the image is displayed using the matplotlib.pyplot.imshow function.
+
+This file is created by Chandradithya Janaswami. This code returns the image and labels as tensors.
 '''
 
 import os
@@ -93,7 +95,7 @@ if __name__ == '__main__' :
 
     
     # Create dataset instance
-    dataset = WikiArtDataset(artist_csv=artist_csv, genre_csv=genres_csv, style_csv=styles_csv, img_dir=img_dir, transform=None)
+    dataset = WikiArtDataset(artist_csv=artist_csv, genre_csv=genres_csv, style_csv=styles_csv, img_dir=img_dir, transform=tran)
 
     print(len(dataset))
     
