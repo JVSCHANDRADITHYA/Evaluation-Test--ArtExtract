@@ -1,10 +1,16 @@
+'''
+This script checks if the images in the CSV file exist in the image directory and then gives a summary of the range, missing images and saves a cleaned CSV file without missing images.
+The script was written with the assumption that the CSV file has no headers and the columns are in the order: image_path, artist, genre, style.
+Emojis are used for better visualization of the output as recommeded by github copilot.
+'''
+
 import os
 import pandas as pd
 
 # Paths
-csv_file = r"csv_files\class_wiki_art.csv"  # Change this to your CSV file
+csv_file = r"make_dataset\files\class_wiki_art.csv" # Change this to your CSV file
 img_dir = r"F:\GSoc_2025\wiki_art_dataset\wikiart"  # Change this to your image directory
-output_csv = r"csv_files\cleaned_dataset.csv"  # Output CSV without missing images
+output_csv = r"make_dataset\files\cleaned_dataset.csv"  # Output CSV without missing images
 
 # Load CSV
 df = pd.read_csv(csv_file, header=None)  # No headers in CSV
@@ -42,7 +48,7 @@ print(f"Total images in CSV: {len(df)}")
 print(f"✅ Found images: {len(found_images)}")
 print(f"❌ Missing images: {len(missing_images)}")
 print(f"\n❌ Missing Image List: {missing_images}")
-print(f"\n🔢 Label Ranges:")
+print("\n🔢 Label Ranges:")
 print(f"🎨 Artist: {artist_min} to {artist_max}")
 print(f"📚 Genre: {genre_min} to {genre_max}")
 print(f"🖌️ Style: {style_min} to {style_max}")
