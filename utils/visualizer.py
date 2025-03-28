@@ -49,9 +49,7 @@ class WikiArtVisualizer:
         
 # EXAMPLE USAGE
 if __name__ == '__main__':
-    artist_csv = r"F:\GSoc_2025\wiki_art_dataset\wikiart\artist_train.csv"
-    styles_csv = r"F:\GSoc_2025\wiki_art_dataset\wikiart\style_train.csv"  
-    genres_csv = r"F:\GSoc_2025\wiki_art_dataset\wikiart\genre_train.csv"
+
     img_dir = r"F:\GSoc_2025\wiki_art_dataset\wikiart"
 
 
@@ -61,7 +59,7 @@ if __name__ == '__main__':
     ])
     
     # Create dataset instance
-    dataset = WikiArtDataset(artist_csv=artist_csv, genre_csv=genres_csv, style_csv=styles_csv, img_dir=img_dir, transform=None)
+    dataset = WikiArtDataset(img_dir=img_dir, transform=None)
     
     visualizer = WikiArtVisualizer(dataset)
     visualizer.show_random_images(2, 2)
