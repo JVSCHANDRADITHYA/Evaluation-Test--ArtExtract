@@ -103,3 +103,5 @@ if __name__ == '__main__' :
     print(image, labels)
     plt.imshow(image.permute(1, 2, 0))
     plt.show()
+    
+
