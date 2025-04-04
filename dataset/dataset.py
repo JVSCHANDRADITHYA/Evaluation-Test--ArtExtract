@@ -22,6 +22,8 @@ import matplotlib.pyplot as plt
 from torchvision.io import read_image
 from torchvision.transforms import transforms
 from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
+from sklearn.model_selection import train_test_split
 
 class WikiArtDataset(Dataset):
     def __init__(self, csv_file, img_dir, transform=None):
@@ -47,11 +49,9 @@ class WikiArtDataset(Dataset):
         row = self.data.iloc[index]
         img_path = os.path.join(self.img_dir, row['image_path'])
 
-        # Check if image file exists
         if not os.path.exists(img_path):
             print(f" File not found: {img_path}")
 
-        # Read and normalize image
         image = read_image(img_path).float() / 255.0  
 
         # Convert labels to tensor
@@ -64,9 +64,14 @@ class WikiArtDataset(Dataset):
         return image, labels
 
 
+# Helper function to create DataLoader instances
+def create_dataloader(dataset, batch_size, shuffle):
+    return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=20)
+
+
 # EXAMPLE USAGE
 if __name__ == '__main__':
-    csv_file = r"make_dataset\files\class_wiki_art.csv"
+    csv_file = r"F:\GSoc_2025\Evaluation-Test--ArtExtract\csv_files\test_data.csv"
     img_dir = r"F:\GSoc_2025\wiki_art_dataset\wikiart"
 
     transform = transforms.Compose([
@@ -75,14 +80,10 @@ if __name__ == '__main__':
     ])
 
     # Create dataset instance
-    dataset = WikiArtDataset(csv_file=csv_file, img_dir=img_dir, transform=None)
-
-    print(f"Dataset size: {len(dataset)}")
-    
-    # Sample image and labels
-    image, labels = dataset[0]  # Change index as needed
-    print("Labels:", labels)
-
+    dataset = WikiArtDataset(csv_file=csv_file, img_dir=img_dir, transform=transform)
+    image, labels = dataset[0]
+    print(f"Image shape: {image.shape}")
+    print(f"Labels: {labels}")
     # Display image
-    plt.imshow(image.permute(1, 2, 0))
+    plt.imshow(image.permute(1, 2, 0).numpy())
     plt.show()
