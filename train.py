@@ -17,11 +17,16 @@ criterion_genre = nn.CrossEntropyLoss()
 criterion_style = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
+tran = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406],  # ImageNet means
+                         std=[0.229, 0.224, 0.225])
+])
+
 csv_file = r"F:\GSoc_2025\Evaluation-Test--ArtExtract\csv_files\train_data.csv"
-dataset = WikiArtDataset(csv_file=csv_file, img_dir=r"F:\GSoc_2025\wiki_art_dataset\wikiart", transform=transforms.Compose([
-    transforms.Resize((224, 224)),]))  # Resize to match ResNet input
+dataset = WikiArtDataset(csv_file=csv_file, img_dir=r"F:\GSoc_2025\wiki_art_dataset\wikiart", transform=tran)  # Resize to match ResNet input
 # Dataloader (example)
-train_loader = DataLoader(dataset=dataset, batch_size=64, shuffle=True, num_workers=20, pin_memory=True)
+train_loader = DataLoader(dataset=dataset, batch_size=256, shuffle=True)
 
 # Training
 epochs = 10
