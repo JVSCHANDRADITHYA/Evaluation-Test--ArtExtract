@@ -60,6 +60,7 @@ class WikiArtDataset(Dataset):
         # Apply transformations if provided
         if self.transform:
             image = self.transform(image)
+        
 
         return image, labels
 

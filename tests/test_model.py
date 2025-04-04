@@ -9,7 +9,7 @@ import random
 import matplotlib.pyplot as plt
 
 # Import the ConvLSTMModel
-from model.Conv_LSTM import ConvLSTMModel  # Replace with actual filename
+from model.Conv_Feature_example import ConvLSTMModel  # Replace with actual filename
 
 # ======= 1️⃣ Generate a Small Sample Dataset =======
 # Create a small dataset CSV with random labels
