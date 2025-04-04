@@ -28,6 +28,8 @@ class CNN_LSTM_Model(nn.Module):
     def forward(self, x):
         batch_size = x.shape[0]
 
+
+
         # Extract CNN Features (Output shape: batch_size x 512 x 7 x 7)
         features = self.feature_extractor(x)
         features = features.view(batch_size, 512, -1)  # Flatten spatial dimensions

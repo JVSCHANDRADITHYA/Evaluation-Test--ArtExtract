@@ -5,7 +5,6 @@ import torchvision.models as models
 class CNN_LSTM_Model(nn.Module):
     def __init__(self, hidden_size=256, num_layers=2, num_classes=(128, 11, 27)):
         super(CNN_LSTM_Model, self).__init__()
-        # Pretrained ResNet18 (remove last pooling and FC)
         resnet = models.resnet18(pretrained=True)
         self.feature_extractor = nn.Sequential(*list(resnet.children())[:-2])  # output: (B, 512, 7, 7)
 

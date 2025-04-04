@@ -7,11 +7,9 @@ from model.Conv_LSTM import CNN_LSTM_Model
 from torchvision import transforms
 
 
-# Model setup
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = CNN_LSTM_Model().to(device)
 
-# Loss and optimizer
 criterion_artist = nn.CrossEntropyLoss()
 criterion_genre = nn.CrossEntropyLoss()
 criterion_style = nn.CrossEntropyLoss()
@@ -19,12 +17,12 @@ optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
 tran = transforms.Compose([
     transforms.Resize((224, 224)),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406],  # ImageNet means
+    transforms.Normalize(mean=[0.485, 0.456, 0.406],  
                          std=[0.229, 0.224, 0.225])
 ])
 
 csv_file = r"F:\GSoc_2025\Evaluation-Test--ArtExtract\csv_files\train_data.csv"
-dataset = WikiArtDataset(csv_file=csv_file, img_dir=r"F:\GSoc_2025\wiki_art_dataset\wikiart", transform=tran)  # Resize to match ResNet input
+dataset = WikiArtDataset(csv_file=csv_file, img_dir=r"F:\GSoc_2025\wiki_art_dataset\wikiart", transform=tran)  
 # Dataloader (example)
 train_loader = DataLoader(dataset=dataset, batch_size=256, shuffle=True)
 
