@@ -45,7 +45,37 @@ This shows us that the dataset is heavily imbalanced and learns to classify only
 
 However the result for the actual in-site data is projected to be better and will be updated within 24 hours
 
----
+
+
+## TRAIN ON YOUR CUSTOM DATASET
+
+Implement your code using `torch.utils.data.Dataset` [an abstract class in which you can implement your own `__getitem__`]
+
+### CREATE AN ENVIRONMENT
+```bash
+conda create -f env.yml
+```
+Here is the [env.yml file](env.yml)
+
+### Choose a model to train
+Out of the 4 different models given below choose one and import it
+```
+Conv_LSTM_patch.CNN_LSTM_Model [ResNet Base]
+Conv_LSTM_flatten.CNN_LSTM_Model [ResNet Base but high loss]
+Conv_LSTM_VGG.VGG_LSTM Model [VGG 16 Base]
+COnv_LSTM_Vision_Transformer.ConvLSTM_VisionTransformer [ViT base better feature extraction]
+```
+
+```python
+python train_[your_model].py
+```
+### Test the results
+In this Repo, model weight of the ResNet model are given in the `checkpoints\ResNet\cnn_lstm_patch_model.pth`
+
+Use the `test_model.py` script and feed your test data
+```python
+python test_model.py
+```
 
 ## 🧠 Architecture: CNN-LSTM for Multitask Classification
 
