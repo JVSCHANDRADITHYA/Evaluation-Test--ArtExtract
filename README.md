@@ -11,15 +11,24 @@ This project tackles the task of **multitask classification** on the **WikiArt D
 Unlike most implementations that rely on the incomplete subset (~11k images), **this project uses the full WikiArt dataset (~81,000 paintings)**. The dataset was curated manually by scraping and mapping all artwork to the correct labels, ensuring **clean, complete, and consistent** training data.
 
 
-
 ## Results
-✅ Test Accuracy (on 6,000 unseen images)
+
+### Predicted Images
+<div align="center"> <img src="correct_predicted.png" width=""/></div>
+
+### Test Accuracy (on 6,000 unseen images)
 Task	Top-1 Accuracy
 ```
-🎨 Artist	62.4%
-🧑‍🏫 Genre	73.1%
-🖌️ Style	68.7%
+🎨 Artist	    65.18
+🧑‍🏫 Genre	       65.92%
+🖌️ Style	     57.70%
 ```
+```
+Precision (W) : 0.5760
+Recall    (W) : 0.5770
+F1-Score  (W) : 0.5732
+```
+
 ```
 Note: The dataset is heavily imbalanced, especially for artists. Only a handful of artists have >1000 paintings.
 ```
@@ -47,7 +56,7 @@ However the result for the actual in-site data is projected to be better and wil
 
 
 
-## TRAIN ON YOUR CUSTOM DATASET
+## HOW TO USE THE CODE
 
 Implement your code using `torch.utils.data.Dataset` [an abstract class in which you can implement your own `__getitem__`]
 
