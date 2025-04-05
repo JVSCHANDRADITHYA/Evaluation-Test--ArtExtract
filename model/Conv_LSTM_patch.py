@@ -28,3 +28,11 @@ class CNN_LSTM_Model(nn.Module):
         style_pred = self.fc_style(last_hidden)
 
         return artist_pred, genre_pred, style_pred
+
+    def extract_features(self, x):
+        with torch.no_grad():
+            cls_embedding = self.vit(x)  # (B, 768)
+            lstm_input = cls_embedding.unsqueeze(1)  # (B, 1, 768)
+            lstm_out, _ = self.lstm(lstm_input)
+            last_hidden = lstm_out[:, -1, :]  # (B, hidden_size)
+        return last_hidden

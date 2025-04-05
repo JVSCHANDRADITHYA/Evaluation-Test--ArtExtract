@@ -1,63 +1,107 @@
 import torch
 import torch.nn as nn
+import torch.optim as optim
 from torch.utils.data import DataLoader
-from tqdm import tqdm
-from dataset.dataset import WikiArtDataset
-from model.Conv_LSTM import CNN_LSTM_Model
 from torchvision import transforms
+from dataset.dataset_incomplete import inWikiArtDataset
+from model.Conv_LSTM_patch import CNN_LSTM_Model
+from tqdm import tqdm
 
+# Device setup
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# Model
 model = CNN_LSTM_Model().to(device)
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
-criterion_artist = nn.CrossEntropyLoss()
-criterion_genre = nn.CrossEntropyLoss()
-criterion_style = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
-
-tran = transforms.Compose([
+# Transform
+transform = transforms.Compose([
     transforms.Resize((224, 224)),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406],  
-                         std=[0.229, 0.224, 0.225])
 ])
 
-csv_file = r"F:\GSoc_2025\Evaluation-Test--ArtExtract\csv_files\train_data.csv"
-dataset = WikiArtDataset(csv_file=csv_file, img_dir=r"F:\GSoc_2025\wiki_art_dataset\wikiart", transform=tran)  
-# Dataloader (example)
-train_loader = DataLoader(dataset=dataset, batch_size=256, shuffle=True)
+# Directories
+img_dir = r"F:\GSoc_2025\wiki_art_dataset\wikiart"
 
-# Training
-epochs = 10
-for epoch in range(epochs):
+# Datasets
+train_dataset = WikiArtDataset(csv_file=r"csv_files\train_data.csv", img_dir=img_dir, transform=transform)
+test_dataset = WikiArtDataset(csv_file=r"csv_files\val_data.csv", img_dir=img_dir, transform=transform)
+
+# DataLoaders
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=0, pin_memory=True)
+test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False, num_workers=0, pin_memory=True)
+
+# Accuracy function
+def evaluate(model, loader):
+    model.eval()
+    correct_artist, correct_genre, correct_style = 0, 0, 0
+    total = 0
+
+    with torch.no_grad():
+        for images, labels in loader:
+            artist_labels, genre_labels, style_labels = labels[:, 0], labels[:, 1], labels[:, 2]
+            images = images.to(device)
+            artist_labels = artist_labels.to(device)
+            genre_labels = genre_labels.to(device)
+            style_labels = style_labels.to(device)
+
+            artist_pred, genre_pred, style_pred = model(images)
+
+            _, artist_preds = torch.max(artist_pred, 1)
+            _, genre_preds = torch.max(genre_pred, 1)
+            _, style_preds = torch.max(style_pred, 1)
+
+            correct_artist += (artist_preds == artist_labels).sum().item()
+            correct_genre += (genre_preds == genre_labels).sum().item()
+            correct_style += (style_preds == style_labels).sum().item()
+            total += artist_labels.size(0)
+
+    return (
+        100 * correct_artist / total,
+        100 * correct_genre / total,
+        100 * correct_style / total,
+    )
+
+# Training loop
+num_epochs = 10
+
+for epoch in range(num_epochs):
     model.train()
-    total_loss = 0
+    running_loss = 0.0
+    progress_bar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}")
 
-    for images, labels in tqdm(train_loader):
-        (artist_labels, genre_labels, style_labels) = labels[:, 0], labels[:, 1], labels[:, 2]
-        
+    for images, labels in progress_bar:
+        artist_labels, genre_labels, style_labels = labels[:, 0], labels[:, 1], labels[:, 2]
         images = images.to(device)
         artist_labels = artist_labels.to(device)
         genre_labels = genre_labels.to(device)
         style_labels = style_labels.to(device)
 
         optimizer.zero_grad()
+        artist_pred, genre_pred, style_pred = model(images)
 
-        # Forward
-        out_artist, out_genre, out_style = model(images)
+        loss1 = criterion(artist_pred, artist_labels)
+        loss2 = criterion(genre_pred, genre_labels)
+        loss3 = criterion(style_pred, style_labels)
 
-        # Compute losses
-        loss_artist = criterion_artist(out_artist, artist_labels)
-        loss_genre = criterion_genre(out_genre, genre_labels)
-        loss_style = criterion_style(out_style, style_labels)
-
-        # Total loss (you can weight them if needed)
-        loss = loss_artist + loss_genre + loss_style
-
+        loss = loss1 + loss2 + loss3
         loss.backward()
         optimizer.step()
 
-        total_loss += loss.item()
+        running_loss += loss.item()
+        progress_bar.set_postfix({"Loss": f"{loss.item():.4f}"})
 
-    print(f"Epoch [{epoch+1}/{epochs}] Loss: {total_loss:.4f}")
-    #print test accuracies at every epoch
-    
+    avg_loss = running_loss / len(train_loader)
+
+    # Evaluate on test set
+    artist_acc, genre_acc, style_acc = evaluate(model, test_loader)
+
+    print(f"\n📊 Epoch [{epoch+1}/{num_epochs}]")
+    print(f"Loss: {avg_loss:.4f}")
+    print(f"🎨 Test Artist Accuracy: {artist_acc:.2f}%")
+    print(f"🎼 Test Genre Accuracy: {genre_acc:.2f}%")
+    print(f"🎭 Test Style Accuracy: {style_acc:.2f}%\n")
+
+# Save model
+torch.save(model.state_dict(), "cnn_lstm_patch_model.pth")
+print("Model saved to cnn_lstm_patch_model.pth")

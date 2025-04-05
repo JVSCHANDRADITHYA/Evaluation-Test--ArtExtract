@@ -34,6 +34,7 @@ class WikiArtDataset(Dataset):
             transform (callable, optional): Optional transformations to apply on the images.
         """
         self.data = pd.read_csv(csv_file)
+        # self.data = self.data[:500]
         self.img_dir = img_dir
         self.transform = transform  # Default is None
 
